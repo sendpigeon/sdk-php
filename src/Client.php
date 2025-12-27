@@ -7,6 +7,7 @@ namespace SendPigeon;
 use SendPigeon\Resources\ApiKeys;
 use SendPigeon\Resources\Domains;
 use SendPigeon\Resources\Emails;
+use SendPigeon\Resources\Suppressions;
 use SendPigeon\Resources\Templates;
 use SendPigeon\Types\SendBatchResponse;
 use SendPigeon\Types\SendEmailResponse;
@@ -30,6 +31,7 @@ class Client
     public readonly Templates $templates;
     public readonly Domains $domains;
     public readonly ApiKeys $apiKeys;
+    public readonly Suppressions $suppressions;
 
     /**
      * Create a new Client.
@@ -50,6 +52,7 @@ class Client
         $this->templates = new Templates($this->http);
         $this->domains = new Domains($this->http);
         $this->apiKeys = new ApiKeys($this->http);
+        $this->suppressions = new Suppressions($this->http);
     }
 
     /**
