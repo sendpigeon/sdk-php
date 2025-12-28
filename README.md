@@ -40,6 +40,20 @@ $client = new SendPigeon(
 );
 ```
 
+## Local Development
+
+Use the SendPigeon CLI to catch emails locally:
+
+```bash
+# Terminal 1: Start local server
+npx @sendpigeon/cli dev
+
+# Terminal 2: Run your app with dev mode
+SENDPIGEON_DEV=true php app.php
+```
+
+When `SENDPIGEON_DEV=true`, the SDK routes requests to `localhost:4100` instead of production.
+
 ## Sending Emails
 
 ### Basic Email
