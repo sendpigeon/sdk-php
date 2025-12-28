@@ -127,15 +127,6 @@ foreach ($response->data as $result) {
 // Get email by ID
 $email = $client->emails->get('email_xxx');
 
-// List emails
-$result = $client->emails->list(
-    limit: 20,
-    status: EmailStatus::Delivered,
-);
-foreach ($result['data'] as $email) {
-    echo "{$email->id}: {$email->status->value}\n";
-}
-
 // Cancel scheduled email
 $cancelled = $client->emails->cancel('email_xxx');
 ```
