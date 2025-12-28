@@ -17,6 +17,7 @@ class HttpClient
     private int $maxRetries;
 
     private const DEFAULT_BASE_URL = 'https://api.sendpigeon.dev';
+    private const DEV_BASE_URL = 'http://localhost:4100';
     private const DEFAULT_TIMEOUT = 30;
     private const DEFAULT_MAX_RETRIES = 2;
     private const MAX_RETRIES = 5;
@@ -30,11 +31,23 @@ class HttpClient
         $this->apiKey = $apiKey;
         $this->maxRetries = min($maxRetries ?? self::DEFAULT_MAX_RETRIES, self::MAX_RETRIES);
 
+        $resolvedBaseUrl = $baseUrl ?? $this->resolveBaseUrl();
+
         $this->client = new Client([
-            'base_uri' => $baseUrl ?? self::DEFAULT_BASE_URL,
+            'base_uri' => $resolvedBaseUrl,
             'timeout' => $timeout ?? self::DEFAULT_TIMEOUT,
             'http_errors' => false,
         ]);
+    }
+
+    private function resolveBaseUrl(): string
+    {
+        $devMode = getenv('SENDPIGEON_DEV');
+        if ($devMode === 'true' || $devMode === '1') {
+            error_log('[SendPigeon] Dev mode -> ' . self::DEV_BASE_URL);
+            return self::DEV_BASE_URL;
+        }
+        return self::DEFAULT_BASE_URL;
     }
 
     /**

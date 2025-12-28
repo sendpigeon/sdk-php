@@ -6,6 +6,7 @@ namespace SendPigeon\Resources;
 
 use SendPigeon\HttpClient;
 use SendPigeon\Types\Template;
+use SendPigeon\Types\TestTemplateResponse;
 
 class Templates
 {
@@ -15,21 +16,27 @@ class Templates
 
     /**
      * Create a new template.
+     *
+     * @param array<array{key: string, type: string, fallbackValue?: string}>|null $variables
      */
     public function create(
-        string $name,
+        string $templateId,
         string $subject,
+        ?string $name = null,
         ?string $html = null,
         ?string $text = null,
+        ?array $variables = null,
         ?string $domainId = null,
     ): Template {
         $body = [
-            'name' => $name,
+            'templateId' => $templateId,
             'subject' => $subject,
         ];
 
+        if ($name !== null) $body['name'] = $name;
         if ($html !== null) $body['html'] = $html;
         if ($text !== null) $body['text'] = $text;
+        if ($variables !== null) $body['variables'] = $variables;
         if ($domainId !== null) $body['domainId'] = $domainId;
 
         $response = $this->http->post('/v1/templates', $body);
@@ -78,6 +85,8 @@ class Templates
 
     /**
      * Update a template.
+     *
+     * @param array<array{key: string, type: string, fallbackValue?: string}>|null $variables
      */
     public function update(
         string $id,
@@ -85,12 +94,14 @@ class Templates
         ?string $subject = null,
         ?string $html = null,
         ?string $text = null,
+        ?array $variables = null,
     ): Template {
         $body = [];
         if ($name !== null) $body['name'] = $name;
         if ($subject !== null) $body['subject'] = $subject;
         if ($html !== null) $body['html'] = $html;
         if ($text !== null) $body['text'] = $text;
+        if ($variables !== null) $body['variables'] = $variables;
 
         $response = $this->http->patch("/v1/templates/{$id}", $body);
         return Template::fromArray($response);
@@ -102,5 +113,40 @@ class Templates
     public function delete(string $id): void
     {
         $this->http->delete("/v1/templates/{$id}");
+    }
+
+    /**
+     * Publish a template.
+     */
+    public function publish(string $id): Template
+    {
+        $response = $this->http->post("/v1/templates/{$id}/publish", []);
+        return Template::fromArray($response);
+    }
+
+    /**
+     * Unpublish a template.
+     */
+    public function unpublish(string $id): Template
+    {
+        $response = $this->http->post("/v1/templates/{$id}/unpublish", []);
+        return Template::fromArray($response);
+    }
+
+    /**
+     * Send a test email using the template.
+     *
+     * @param array<string, string>|null $variables
+     */
+    public function test(
+        string $id,
+        string $to,
+        ?array $variables = null,
+    ): TestTemplateResponse {
+        $body = ['to' => $to];
+        if ($variables !== null) $body['variables'] = $variables;
+
+        $response = $this->http->post("/v1/templates/{$id}/test", $body);
+        return TestTemplateResponse::fromArray($response);
     }
 }

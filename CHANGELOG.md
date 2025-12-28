@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+- Added `SENDPIGEON_DEV` env var support for local development
+- Simplified `send()` and `sendBatch()` using `array_filter()`
+- Internal refactoring, no breaking changes
+
 ## 0.3.0
 
 - Add Suppressions API (`$client->suppressions->list()`, `$client->suppressions->delete()`)

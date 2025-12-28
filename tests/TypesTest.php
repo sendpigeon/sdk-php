@@ -58,19 +58,29 @@ class TypesTest extends TestCase
     {
         $data = [
             'id' => 'tmpl_123',
-            'name' => 'welcome',
+            'templateId' => 'welcome',
+            'name' => 'Welcome Email',
             'subject' => 'Welcome, {{name}}!',
-            'variables' => ['name', 'company'],
-            'created_at' => '2024-01-01T00:00:00Z',
-            'updated_at' => '2024-01-02T00:00:00Z',
+            'variables' => [
+                ['key' => 'name', 'type' => 'string'],
+                ['key' => 'company', 'type' => 'string', 'fallbackValue' => 'Acme'],
+            ],
+            'status' => 'draft',
+            'createdAt' => '2024-01-01T00:00:00Z',
+            'updatedAt' => '2024-01-02T00:00:00Z',
             'html' => '<h1>Hello {{name}}</h1>',
         ];
 
         $template = Template::fromArray($data);
 
         $this->assertEquals('tmpl_123', $template->id);
-        $this->assertEquals('welcome', $template->name);
-        $this->assertEquals(['name', 'company'], $template->variables);
+        $this->assertEquals('welcome', $template->templateId);
+        $this->assertEquals('Welcome Email', $template->name);
+        $this->assertEquals('draft', $template->status);
+        $this->assertCount(2, $template->variables);
+        $this->assertEquals('name', $template->variables[0]->key);
+        $this->assertEquals('string', $template->variables[0]->type);
+        $this->assertEquals('Acme', $template->variables[1]->fallbackValue);
         $this->assertEquals('<h1>Hello {{name}}</h1>', $template->html);
     }
 

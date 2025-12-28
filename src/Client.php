@@ -93,27 +93,25 @@ class Client
         ?string $scheduledAt = null,
         ?string $idempotencyKey = null,
     ): SendEmailResponse {
-        $body = ['to' => is_array($to) ? $to : [$to]];
+        $body = array_filter([
+            'to' => is_array($to) ? $to : [$to],
+            'from' => $from,
+            'subject' => $subject,
+            'html' => $html,
+            'text' => $text,
+            'cc' => $cc !== null ? (is_array($cc) ? $cc : [$cc]) : null,
+            'bcc' => $bcc !== null ? (is_array($bcc) ? $bcc : [$bcc]) : null,
+            'replyTo' => $replyTo,
+            'templateId' => $templateId,
+            'variables' => $variables,
+            'attachments' => $attachments,
+            'tags' => $tags,
+            'metadata' => $metadata,
+            'headers' => $headers,
+            'scheduled_at' => $scheduledAt,
+        ], fn($v) => $v !== null);
 
-        if ($from !== null) $body['from'] = $from;
-        if ($subject !== null) $body['subject'] = $subject;
-        if ($html !== null) $body['html'] = $html;
-        if ($text !== null) $body['text'] = $text;
-        if ($cc !== null) $body['cc'] = is_array($cc) ? $cc : [$cc];
-        if ($bcc !== null) $body['bcc'] = is_array($bcc) ? $bcc : [$bcc];
-        if ($replyTo !== null) $body['replyTo'] = $replyTo;
-        if ($templateId !== null) $body['templateId'] = $templateId;
-        if ($variables !== null) $body['variables'] = $variables;
-        if ($attachments !== null) $body['attachments'] = $attachments;
-        if ($tags !== null) $body['tags'] = $tags;
-        if ($metadata !== null) $body['metadata'] = $metadata;
-        if ($headers !== null) $body['headers'] = $headers;
-        if ($scheduledAt !== null) $body['scheduled_at'] = $scheduledAt;
-
-        $requestHeaders = [];
-        if ($idempotencyKey !== null) {
-            $requestHeaders['Idempotency-Key'] = $idempotencyKey;
-        }
+        $requestHeaders = $idempotencyKey !== null ? ['Idempotency-Key' => $idempotencyKey] : [];
 
         $response = $this->http->post('/v1/emails', $body, $requestHeaders);
         return SendEmailResponse::fromArray($response);
@@ -126,27 +124,24 @@ class Client
      */
     public function sendBatch(array $emails): SendBatchResponse
     {
-        $apiEmails = array_map(function (array $email) {
-            $apiEmail = [];
-
-            if (isset($email['to'])) {
-                $apiEmail['to'] = is_array($email['to']) ? $email['to'] : [$email['to']];
-            }
-            if (isset($email['from'])) $apiEmail['from'] = $email['from'];
-            if (isset($email['subject'])) $apiEmail['subject'] = $email['subject'];
-            if (isset($email['html'])) $apiEmail['html'] = $email['html'];
-            if (isset($email['text'])) $apiEmail['text'] = $email['text'];
-            if (isset($email['cc'])) $apiEmail['cc'] = $email['cc'];
-            if (isset($email['bcc'])) $apiEmail['bcc'] = $email['bcc'];
-            if (isset($email['replyTo'])) $apiEmail['replyTo'] = $email['replyTo'];
-            if (isset($email['templateId'])) $apiEmail['templateId'] = $email['templateId'];
-            if (isset($email['variables'])) $apiEmail['variables'] = $email['variables'];
-            if (isset($email['tags'])) $apiEmail['tags'] = $email['tags'];
-            if (isset($email['metadata'])) $apiEmail['metadata'] = $email['metadata'];
-            if (isset($email['headers'])) $apiEmail['headers'] = $email['headers'];
-            if (isset($email['scheduledAt'])) $apiEmail['scheduled_at'] = $email['scheduledAt'];
-
-            return $apiEmail;
+        $apiEmails = array_map(function (array $email): array {
+            $to = $email['to'] ?? null;
+            return array_filter([
+                'to' => $to !== null ? (is_array($to) ? $to : [$to]) : null,
+                'from' => $email['from'] ?? null,
+                'subject' => $email['subject'] ?? null,
+                'html' => $email['html'] ?? null,
+                'text' => $email['text'] ?? null,
+                'cc' => $email['cc'] ?? null,
+                'bcc' => $email['bcc'] ?? null,
+                'replyTo' => $email['replyTo'] ?? null,
+                'templateId' => $email['templateId'] ?? null,
+                'variables' => $email['variables'] ?? null,
+                'tags' => $email['tags'] ?? null,
+                'metadata' => $email['metadata'] ?? null,
+                'headers' => $email['headers'] ?? null,
+                'scheduled_at' => $email['scheduledAt'] ?? null,
+            ], fn($v) => $v !== null);
         }, $emails);
 
         $response = $this->http->post('/v1/emails/batch', ['emails' => $apiEmails]);
