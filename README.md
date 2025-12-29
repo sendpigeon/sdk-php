@@ -46,7 +46,7 @@ Use the SendPigeon CLI to catch emails locally:
 
 ```bash
 # Terminal 1: Start local server
-npx @sendpigeon/cli dev
+npx @sendpigeon-sdk/cli dev
 
 # Terminal 2: Run your app with dev mode
 SENDPIGEON_DEV=true php app.php
