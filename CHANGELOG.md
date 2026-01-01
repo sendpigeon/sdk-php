@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0
+
+- Per-email tracking: `tracking: new TrackingOptions(opens: true, clicks: true)` in send requests
+- Added `TrackingOptions` type
+- Response `warnings` field for non-fatal issues (e.g., tracking disabled at org level)
+- Updated `TrackingDefaults` to use `trackingEnabled` master toggle
+
 ## 0.3.1
 
 - Added `SENDPIGEON_DEV` env var support for local development

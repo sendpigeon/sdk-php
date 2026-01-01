@@ -135,6 +135,28 @@ foreach ($response->data as $result) {
 }
 ```
 
+### Tracking
+
+Enable open/click tracking per email (opt-in):
+
+```php
+use SendPigeon\Types\TrackingOptions;
+
+$response = $client->send(
+    to: 'user@example.com',
+    subject: 'Welcome!',
+    html: '<p>Check out our <a href="https://example.com">site</a>!</p>',
+    tracking: new TrackingOptions(opens: true, clicks: true),
+);
+
+// Response may include warnings if tracking is disabled at org level
+if ($response->warnings) {
+    print_r($response->warnings);
+}
+```
+
+Configure organization defaults in Settings → Tracking.
+
 ## Email Management
 
 ```php

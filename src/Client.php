@@ -9,8 +9,10 @@ use SendPigeon\Resources\Domains;
 use SendPigeon\Resources\Emails;
 use SendPigeon\Resources\Suppressions;
 use SendPigeon\Resources\Templates;
+use SendPigeon\Resources\Tracking;
 use SendPigeon\Types\SendBatchResponse;
 use SendPigeon\Types\SendEmailResponse;
+use SendPigeon\Types\TrackingOptions;
 
 /**
  * SendPigeon SDK client for sending transactional emails.
@@ -32,6 +34,7 @@ class Client
     public readonly Domains $domains;
     public readonly ApiKeys $apiKeys;
     public readonly Suppressions $suppressions;
+    public readonly Tracking $tracking;
 
     /**
      * Create a new Client.
@@ -53,6 +56,7 @@ class Client
         $this->domains = new Domains($this->http);
         $this->apiKeys = new ApiKeys($this->http);
         $this->suppressions = new Suppressions($this->http);
+        $this->tracking = new Tracking($this->http);
     }
 
     /**
@@ -74,6 +78,7 @@ class Client
      * @param array|null $headers Custom email headers
      * @param string|null $scheduledAt ISO datetime to send
      * @param string|null $idempotencyKey Unique key to prevent duplicates
+     * @param TrackingOptions|null $tracking Per-email tracking options
      */
     public function send(
         string|array $to,
@@ -92,6 +97,7 @@ class Client
         ?array $headers = null,
         ?string $scheduledAt = null,
         ?string $idempotencyKey = null,
+        ?TrackingOptions $tracking = null,
     ): SendEmailResponse {
         $body = array_filter([
             'to' => is_array($to) ? $to : [$to],
@@ -109,6 +115,7 @@ class Client
             'metadata' => $metadata,
             'headers' => $headers,
             'scheduled_at' => $scheduledAt,
+            'tracking' => $tracking?->toArray(),
         ], fn($v) => $v !== null);
 
         $requestHeaders = $idempotencyKey !== null ? ['Idempotency-Key' => $idempotencyKey] : [];
@@ -126,6 +133,7 @@ class Client
     {
         $apiEmails = array_map(function (array $email): array {
             $to = $email['to'] ?? null;
+            $tracking = $email['tracking'] ?? null;
             return array_filter([
                 'to' => $to !== null ? (is_array($to) ? $to : [$to]) : null,
                 'from' => $email['from'] ?? null,
@@ -141,6 +149,7 @@ class Client
                 'metadata' => $email['metadata'] ?? null,
                 'headers' => $email['headers'] ?? null,
                 'scheduled_at' => $email['scheduledAt'] ?? null,
+                'tracking' => $tracking instanceof TrackingOptions ? $tracking->toArray() : $tracking,
             ], fn($v) => $v !== null);
         }, $emails);
 

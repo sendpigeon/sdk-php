@@ -11,6 +11,7 @@ readonly class BatchEmailResult
         public string $status,
         public ?string $id = null,
         public ?array $suppressed = null,
+        public ?array $warnings = null,
         public ?array $error = null,
     ) {}
 
@@ -21,6 +22,7 @@ readonly class BatchEmailResult
             status: $data['status'],
             id: $data['id'] ?? null,
             suppressed: $data['suppressed'] ?? null,
+            warnings: $data['warnings'] ?? null,
             error: $data['error'] ?? null,
         );
     }

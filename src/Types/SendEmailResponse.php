@@ -11,6 +11,7 @@ readonly class SendEmailResponse
         public EmailStatus $status,
         public ?string $scheduledAt = null,
         public ?array $suppressed = null,
+        public ?array $warnings = null,
     ) {}
 
     public static function fromArray(array $data): self
@@ -20,6 +21,7 @@ readonly class SendEmailResponse
             status: EmailStatus::from($data['status']),
             scheduledAt: $data['scheduled_at'] ?? null,
             suppressed: $data['suppressed'] ?? null,
+            warnings: $data['warnings'] ?? null,
         );
     }
 }
