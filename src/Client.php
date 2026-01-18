@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SendPigeon;
 
 use SendPigeon\Resources\ApiKeys;
+use SendPigeon\Resources\Broadcasts;
+use SendPigeon\Resources\Contacts;
 use SendPigeon\Resources\Domains;
 use SendPigeon\Resources\Emails;
 use SendPigeon\Resources\Suppressions;
@@ -35,6 +37,8 @@ class Client
     public readonly ApiKeys $apiKeys;
     public readonly Suppressions $suppressions;
     public readonly Tracking $tracking;
+    public readonly Contacts $contacts;
+    public readonly Broadcasts $broadcasts;
 
     /**
      * Create a new Client.
@@ -57,6 +61,8 @@ class Client
         $this->apiKeys = new ApiKeys($this->http);
         $this->suppressions = new Suppressions($this->http);
         $this->tracking = new Tracking($this->http);
+        $this->contacts = new Contacts($this->http);
+        $this->broadcasts = new Broadcasts($this->http);
     }
 
     /**

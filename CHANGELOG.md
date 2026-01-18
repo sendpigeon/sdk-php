@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+
+- Add Contacts API (`$client->contacts->list()`, `create`, `batch`, `get`, `update`, `delete`, `unsubscribe`, `resubscribe`, `stats`, `tags`)
+- Add Broadcasts API (`$client->broadcasts->list()`, `create`, `get`, `update`, `delete`, `send`, `schedule`, `cancel`, `test`, `recipients`, `analytics`)
+- Broadcast targeting: `includeTags` and `excludeTags` options
+
 ## 0.4.0
 
 - Per-email tracking: `tracking: new TrackingOptions(opens: true, clicks: true)` in send requests
